@@ -20,8 +20,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Coordenadas por defecto (Institución Universitaria Pascual Bravo)
 # Se usan solo si la API no trae la latitud/longitud de la estación.
 # ------------------------------------------------------------------
-LAT_DEFECTO = 6.2766
-LON_DEFECTO = -75.5901
+LAT_DEFECTO = 6.2773
+LON_DEFECTO = -75.4475
 
 API_BASE_URL = "https://marco.cornare.gov.co/api/v1/estaciones"
 
@@ -113,9 +113,11 @@ def calcular_indice_calidad(df):
 # ------------------------------------------------------------------
 # Sidebar — parámetros de la consulta (editables por cada estudiante)
 # ------------------------------------------------------------------
+nombre_estudiante = "Jhonatan Perea"
+codigo_estacion = "9"
 st.sidebar.header("Parámetros de tu consulta")
-nombre_estudiante = st.sidebar.text_input("Nombre del estudiante", "Tu Nombre Aquí")
-codigo_estacion = st.sidebar.text_input("Código de estación", "42")
+ st.sidebar.text_input(f"**Estudiante:** {nombre_estudiante}")
+ st.sidebar.text_input(f"**Código de estación:** {codigo_estacion}")
 fecha_desde = st.sidebar.date_input("Desde", pd.to_datetime("2026-08-23")).strftime("%Y-%m-%d")
 fecha_hasta = st.sidebar.date_input("Hasta", pd.to_datetime("2026-08-30")).strftime("%Y-%m-%d")
 calidad = st.sidebar.selectbox("Calidad", [1, 0], index=0, help="1 = solo datos validados")
@@ -159,10 +161,35 @@ if consultar:
             st.subheader("Serie de nivel")
             st.line_chart(df.set_index("fecha")["nivel"])
 
+            # --- Imagen de la estación -- 
+           st.subheader("📷 Así es la estación")
+            col1, col2, col3 = st.columns(3)
+        
+            with col1:
+            st.image(
+            "La_Brizuela_1.jpg",
+            caption="Estación de monitoreo",
+            use_container_width=True
+            )
+    
+            with col2:
+            st.image(
+            "La_Brizuela_3.jpg",
+            caption="Vista de la estación",
+             use_container_width=True
+            )
+    
+            with col3:
+            st.image(
+            "La_Brizuela_4.jpg",
+            caption="Entorno de la estación",
+            use_container_width=True
+            )
+                
             # --- Mapa de la estación ---
             st.subheader("Ubicación de la estación")
             if not coords_reales:
-                st.caption("La API no trajo latitud/longitud de la estación — se muestra el punto de partida (Pascual Bravo). Ajusta `CANDIDATOS_LAT` / `CANDIDATOS_LON` si conoces el nombre real de esas llaves.")
+                st.caption("Guarne, Quebrada La Brizuela, Empresa New Stetic.")
             st.map(pd.DataFrame({"lat": [lat], "lon": [lon]}), zoom=10)
 
             # --- Detalle de calidad ---
