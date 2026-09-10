@@ -1,5 +1,5 @@
 Sistema de Alerta Temprana Hidrométrica
-Quebrada La Brizuela — Sector Empresa New Stetic
+Quebrada La Brizuela  Sector Empresa New Stetic
 Municipio de Guarne, Antioquia
 
 Desarrollado para: Alcaldía de Guarne — Oficina de Gestión del Riesgo
