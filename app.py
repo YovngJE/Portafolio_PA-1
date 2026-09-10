@@ -1,3 +1,4 @@
+"""
 Sistema de Alerta Temprana Hidrométrica
 Quebrada La Brizuela  Sector Empresa New Stetic
 Municipio de Guarne, Antioquia
@@ -24,6 +25,7 @@ import numpy as np
 import streamlit as st
 import altair as alt
 import urllib3
+from pathlib import Path
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -121,7 +123,10 @@ def obtener_serie_nivel(codigo_estacion, desde, hasta, calidad=1, timeout=30):
     try:
         resp = requests.get(url, params=params, headers=headers, timeout=timeout, verify=False)
         if resp.status_code == 200:
-            return resp.json(), None
+            try:
+                return resp.json(), None
+            except ValueError:
+                return None, "La API respondió con contenido que no es JSON válido."
         return None, f"HTTP {resp.status_code}"
     except requests.exceptions.RequestException as e:
         return None, f"Error de red: {e}"
@@ -179,11 +184,15 @@ def calcular_indice_calidad(df):
         return 0.0, 0, 0
     frecuencia_tipica = frecuencia_tipica[0]
 
-    rango_completo = pd.date_range(
-        start=df_idx.index.min(), end=df_idx.index.max(), freq=frecuencia_tipica
-    )
+    try:
+        rango_completo = pd.date_range(
+            start=df_idx.index.min(), end=df_idx.index.max(), freq=frecuencia_tipica
+        )
+    except (TypeError, ValueError):
+        return 0.0, 0, 0
+
     esperados = len(rango_completo)
-    huecos = esperados - len(df_idx)
+    huecos = max(0, esperados - len(df_idx))
     completitud = max(0.0, 1 - (huecos / esperados)) if esperados > 0 else 0.0
 
     Q1 = df["nivel"].quantile(0.25)
@@ -322,6 +331,10 @@ with st.expander("ℹ️ ¿Por qué se monitorea este punto?"):
 
 if consultar:
 
+    if fecha_desde > fecha_hasta:
+        st.error("❌ La fecha inicial no puede ser posterior a la fecha final.")
+        st.stop()
+
     with st.spinner("Consultando la API MARCO / CORNARE..."):
         datos_crudos, error = obtener_serie_nivel(
             codigo_estacion, fecha_desde, fecha_hasta, calidad
@@ -449,26 +462,24 @@ if consultar:
 
             col1, col2, col3 = st.columns(3)
 
-            with col1:
-                st.image(
-                    "La_Brizuela_1.jpg",
-                    caption=f"Estación {codigo_estacion} — {NOMBRE_QUEBRADA}",
-                    use_container_width=True
-                )
+            fotos = [
+                ("La_Brizuela_1.jpg", f"Estación {codigo_estacion} — {NOMBRE_QUEBRADA}"),
+                ("La_Brizuela_3.jpg", "Vista del cauce, sector New Stetic"),
+                ("La_Brizuela_4.jpg", "Entorno vial y de infraestructura cercana"),
+            ]
 
-            with col2:
-                st.image(
-                    "La_Brizuela_3.jpg",
-                    caption="Vista del cauce, sector New Stetic",
-                    use_container_width=True
-                )
+            columnas = [col1, col2, col3]
 
-            with col3:
-                st.image(
-                    "La_Brizuela_4.jpg",
-                    caption="Entorno vial y de infraestructura cercana",
-                    use_container_width=True
-                )
+            for columna, (ruta_foto, caption) in zip(columnas, fotos):
+                with columna:
+                    if Path(ruta_foto).exists():
+                        st.image(
+                            ruta_foto,
+                            caption=caption,
+                            use_container_width=True
+                        )
+                    else:
+                        st.warning(f"No se encontró la imagen: {ruta_foto}")
 
             # ======================================================
             # DETALLE DEL ÍNDICE DE CALIDAD
