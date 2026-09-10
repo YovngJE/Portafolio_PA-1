@@ -2,9 +2,9 @@ Sistema de Alerta Temprana Hidrométrica
 Quebrada La Brizuela  Sector Empresa New Stetic
 Municipio de Guarne, Antioquia
 
-Desarrollado para: Alcaldía de Guarne — Oficina de Gestión del Riesgo
+Desarrollado para: Alcaldía de Guarne  Oficina de Gestión del Riesgo
                     de Desastres (OGRD)
-Fuente de datos:    API MARCO / CORNARE — Estación 9
+Fuente de datos:    API MARCO / CORNARE  Estación 9
 Autor:              Jhonatan Perea
 
 Para correrla:
@@ -34,9 +34,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 MUNICIPIO = "Guarne, Antioquia"
 DEPENDENCIA = "Oficina de Gestión del Riesgo de Desastres (OGRD)"
 NOMBRE_QUEBRADA = "Quebrada La Brizuela"
-SECTOR = "Sector Empresa New Stetic — vía Guarne"
+SECTOR = "Sector Empresa New Stetic  vía Guarne"
 LINEA_EMERGENCIA_NACIONAL = "123"
-LINEA_OGRD_GUARNE = "[Línea OGRD Guarne — pendiente de confirmar por la Alcaldía]"
+LINEA_OGRD_GUARNE = "[Línea OGRD Guarne  pendiente de confirmar por la Alcaldía]"
 
 COLOR_INSTITUCIONAL = "#1B5E20"   # verde institucional
 COLOR_ACENTO = "#F9A825"          # amarillo de alerta
